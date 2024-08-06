@@ -14,15 +14,16 @@ import {
   import Ionicons from "@expo/vector-icons/Ionicons";
   import AntDesign from "@expo/vector-icons/AntDesign";
   import { colors } from "../constants/colors";
+import { Props } from "../intarfases/screensInterface";
   
-  interface Props {
+  interface ValueProps {
     level: string;
     word: string;
     transcription: string;
     translatedWord: string;
   }
   
-  export const WordCard = ({ navigation }, props: Props) => {
+  export const WordCard = ({ navigation }: Props, props: ValueProps) => {
     const [showModal, setShowModal] = useState(false);
   
     const handleExit = () => {
@@ -31,6 +32,7 @@ import {
   
     const handleConfirmExit = async () => {
       setShowModal(false);
+      navigation.navigate('Category')
     };
   
     const handleCancelExit = () => {
@@ -45,7 +47,7 @@ import {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{ flex: 1, justifyContent: "center", backgroundColor: colors.black, alignItems: 'center'}}>
             <View style={styles.header}>
-              <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('initialScreen')}>
+              <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Category')}>
                 <Ionicons name="chevron-back" size={24} color={colors.white} />
               </TouchableOpacity>
               <Text style={styles.headerText}>Учим новые слова</Text>

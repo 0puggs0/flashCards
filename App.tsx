@@ -1,6 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import { WordCard } from './src/components/wordCard';
 import { useEffect } from 'react';
 import {useFonts} from 'expo-font'
 import InitialScreen from './src/screens/initialScreen';

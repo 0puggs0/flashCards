@@ -2,8 +2,9 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { colors } from "../constants/colors";
+import { Props } from "../intarfases/screensInterface";
 
-export default function InitialScreen({ navigation }) {
+export default function InitialScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <View>
@@ -15,7 +16,7 @@ export default function InitialScreen({ navigation }) {
       <View style = {styles.contentBlock}>
         <Text style = {styles.heading}>Учим английский легко с flash cards</Text>
         <Text style = {styles.description}>Изучайте слова по карточкам, выбирая удобные для вас уровни</Text>
-        <TouchableOpacity style = {styles.button} onPress={() => navigation.navigate('WordCard')}>
+        <TouchableOpacity style = {styles.button} onPress={() => navigation.navigate('Category')}>
         <MaterialCommunityIcons name="lightning-bolt" size={27} color={colors.black} />
           <Text style = {styles.buttonText}>Начать</Text>
         </TouchableOpacity>
