@@ -3,6 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { WordCard } from './src/components/wordCard';
 import { useEffect } from 'react';
 import {useFonts} from 'expo-font'
+import InitialScreen from './src/screens/initialScreen';
+import { MyStack } from './src/navigation/mainStack';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -16,17 +18,21 @@ export default function App() {
     return undefined
   }
   return (
+    
     <View style={styles.container}>
-      <WordCard level={'A1 Level'} word={'mother'} transcription={'[`matsh]'} translatedWord={'мама'}></WordCard>
+      {/* <WordCard level={'A1 Level'} word={'mother'} transcription={'[`matsh]'} translatedWord={'мама'}></WordCard> */}
+      {/* <InitialScreen></InitialScreen> */}
+      <MyStack></MyStack>
     </View>
+  
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: 'rgba(20, 22, 27, 1)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    
   },
 });
