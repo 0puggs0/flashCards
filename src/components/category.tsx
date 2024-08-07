@@ -7,14 +7,15 @@ interface Props{
     level: string,
     cost: string,
     percent: string,
-    color: string
+    color: string,
+    isSelected: boolean,
+    onSelect: () => void
 }
 export default function Category(props: Props) {
     const styles = createStyles(props);
-    const [isSelected, setIsSelected] = useState(false)
   return (
     <View style = {styles.container}>
-        <TouchableOpacity onPress = {() => setIsSelected(isSelected ? false : true)}>
+        <TouchableOpacity onPress = {() => props.onSelect()}>
         <View style = {styles.card}>
       <View style = {{flexDirection: 'row', alignItems: 'center', gap: 12}}>
         <Text style = {styles.levelText}>{props.level}</Text>
@@ -23,8 +24,8 @@ export default function Category(props: Props) {
         <View style = {{flexDirection: 'row', alignItems: 'center', gap: 12}}>
             <Text style = {styles.percent}>{props.percent}</Text>
             <Checkbox
-                value={isSelected}
-                onValueChange={setIsSelected}
+                value={props.isSelected}
+                onValueChange={props.onSelect}
             />
         </View>
       </View>

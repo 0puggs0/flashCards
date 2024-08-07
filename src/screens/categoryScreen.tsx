@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { colors } from "../constants/colors";
 import { categories } from "../constants/categories";
 import Category from "../components/category";
@@ -8,22 +8,33 @@ import { Props } from "../intarfases/screensInterface";
 
 
 export default function CategoryScreen({ navigation }:Props) {
+
+  const [selectedCategories , setSelectedCategories ] = useState<string[]>([]);
+
+
+  const onSelect = (level: string) => {
+    if(selectedCategories.includes(level)){
+      setSelectedCategories(prev => prev.filter(item => item !== level))
+    } else {
+      setSelectedCategories(prev => [...prev, level])
+    }
+  }
+
   return (
     <View style = {styles.container}>
       <View style = {styles.content}>
         <Text style = {{textAlign: 'center', fontFamily: 'Poppins-SemiBold', color: colors.white, fontSize: 24, width: 326, marginBottom: 24}}>Выберите категорию сложности</Text>
-      
       <View>
        {categories.category.map((item,index) => {
         return (
-            <Category key={index} level={item.level} cost={item.cost} percent={item.persent} color={item.color}>
+            <Category key={index} level={item.level} cost={item.cost} percent={item.persent} color={item.color} isSelected={selectedCategories.includes(item.level)} onSelect={() => onSelect(item.level)}>
             </Category>
         )
        })}
        <Text style = {styles.description}>5000 слов охватывают 97% английского языка</Text>
       </View>
       </View>
-      <TouchableOpacity style = {styles.continueButton} onPress={() => navigation.navigate('WordCard')}>
+      <TouchableOpacity disabled={!selectedCategories.length}  style = {!selectedCategories.length ? styles.disabledContinueButton : styles.activeContinueButton} onPress={() => navigation.navigate('WordCard')}>
         <Text style = {styles.continueButtonText}>Продолжить</Text>
       </TouchableOpacity>
     </View>
@@ -51,12 +62,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: 'rgba(255, 255, 255, 0.5)'
     },
-    continueButton: {
+    disabledContinueButton: {
         width: '100%',
         padding: 17,
         backgroundColor: 'rgba(241, 204, 6, 0.3)',
         borderRadius: 12
     },
+    activeContinueButton: {
+      width: '100%',
+      padding: 17,
+      backgroundColor: 'rgba(241, 204, 6, 1)',
+      borderRadius: 12
+  },
     continueButtonText: {
         textAlign: 'center',
         fontFamily: 'Poppins-SemiBold',

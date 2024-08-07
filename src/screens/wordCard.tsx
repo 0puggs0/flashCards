@@ -15,6 +15,8 @@ import {
   import AntDesign from "@expo/vector-icons/AntDesign";
   import { colors } from "../constants/colors";
 import { Props } from "../intarfases/screensInterface";
+import { SCREEN_HEIGTH, SCREEN_WIDTH } from "../constants/sizes";
+import { useFetch } from "../hooks/useFetch";
   
   interface ValueProps {
     level: string;
@@ -25,7 +27,13 @@ import { Props } from "../intarfases/screensInterface";
   
   export const WordCard = ({ navigation }: Props, props: ValueProps) => {
     const [showModal, setShowModal] = useState(false);
-  
+    const getData = async () =>{
+      await new Promise(res => setTimeout(()=>{res(true)},3000))
+      
+      }
+    const {loading, data, error, request} = useFetch(getData)
+    
+
     const handleExit = () => {
       setShowModal(true);
     };
@@ -128,8 +136,8 @@ import { Props } from "../intarfases/screensInterface";
   
   const styles = StyleSheet.create({
     container: {
-      width: 362,
-      height: 730,
+      width: SCREEN_WIDTH - 40,
+      height: SCREEN_HEIGTH - 200,
       backgroundColor: "rgba(27, 29, 37, 1)",
       borderRadius: 20,
       paddingHorizontal: 20,
@@ -235,7 +243,7 @@ import { Props } from "../intarfases/screensInterface";
       justifyContent: "space-between",
       flexDirection: "row",
       marginBottom: 24,
-      paddingHorizontal: 26
+      paddingHorizontal: 20
     },
     modalButton: {
       textAlign: "center",
@@ -259,9 +267,12 @@ import { Props } from "../intarfases/screensInterface";
   
     modalTextContainer: {
     
-    width: '100%',  
+    width: 500,  
     alignItems: 'center', 
     marginBottom: 10, 
+    borderBottomColor: colors.borderColor,
+    borderBottomWidth: 1,
+    paddingBottom: 15
     },
   
     modalView: {
