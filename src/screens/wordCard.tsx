@@ -10,13 +10,15 @@ import {
     TouchableWithoutFeedback,
     View,
   } from "react-native";
-  import React, { useState } from "react";
-  import Ionicons from "@expo/vector-icons/Ionicons";
-  import AntDesign from "@expo/vector-icons/AntDesign";
-  import { colors } from "../constants/colors";
+import React, { useEffect, useState } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { colors } from "../constants/colors";
 import { Props } from "../intarfases/screensInterface";
 import { SCREEN_HEIGTH, SCREEN_WIDTH } from "../constants/sizes";
 import { useFetch } from "../hooks/useFetch";
+import { useAppDispatch, useAppSelector } from "../hooks/redux";
+import { getCards } from "../store/cardsSlice";
   
   interface ValueProps {
     level: string;
@@ -26,26 +28,66 @@ import { useFetch } from "../hooks/useFetch";
   }
   
   export const WordCard = ({ navigation }: Props, props: ValueProps) => {
+
+    const dispatch = useAppDispatch()
     const [showModal, setShowModal] = useState(false);
-    const getData = async () =>{
-      await new Promise(res => setTimeout(()=>{res(true)},3000))
-      
-      }
-    const {loading, data, error, request} = useFetch(getData)
-    
+
+    const {cards, cardsLoading} = useAppSelector(state => state.cards)
+
+    const [inputValue, setInputValue] = useState('')
+
+    let [seconds, setSeconds] = useState(0)
+    let [minutes, setMinutes] = useState(0)
+    let [timer, setTimer] = useState('00:00')
+    let [intervalId, setIntervalId] = useState(null);
+
+    const [numOfData, setNumOfData] = useState( Math.floor(Math.random() * 50) + 1) 
+
+    useEffect(() => {
+      dispatch(getCards())
+    }, []);
+
+    useEffect(() => {
+      const id = setInterval(() => {
+        setTimer(
+          String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0')
+        );
+        if (seconds === 59) {
+          setSeconds(0);
+          setMinutes((prevMinutes) => prevMinutes + 1);
+        } else {
+          setSeconds((prevSeconds) => prevSeconds + 1);
+        }
+      }, 1000);
+      setIntervalId(id)
+      return () => clearInterval(id); 
+    }, [minutes, seconds])
+
+
+
 
     const handleExit = () => {
       setShowModal(true);
+      clearInterval(intervalId)
+      
     };
   
     const handleConfirmExit = async () => {
       setShowModal(false);
+
       navigation.navigate('Category')
     };
   
     const handleCancelExit = () => {
       setShowModal(false);
+      setMinutes(0)
+      setSeconds(0)
+      setNumOfData(Math.floor(Math.random() * 50) + 1)
+      setInputValue('')
+
+      
     };
+
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -63,11 +105,11 @@ import { useFetch } from "../hooks/useFetch";
             <View style={styles.container}>
               <View style={styles.topBlock}>
                 <Text style={styles.textLevel}>А1 уровень</Text>
-                <Text style={styles.textTime}>00:15</Text>
+                <Text style={styles.textTime}>{timer}</Text>
               </View>
               <View style={styles.centerBlock}>
                 <View style={styles.mainWordContainer}>
-                  <Text style={styles.mainWord}>mother</Text>
+                  <Text style={styles.mainWord}>{cards.message[numOfData].english}</Text>
                   <TouchableOpacity>
                     <AntDesign name="sound" size={26} color={colors.white} />
                   </TouchableOpacity>
@@ -77,6 +119,8 @@ import { useFetch } from "../hooks/useFetch";
                 <TextInput
                   placeholder={"Введите слово"}
                   style={styles.textInput}
+                  onChangeText={(value) => setInputValue(value)}
+                  value={inputValue}
                 ></TextInput>
               </View>
               <View>
@@ -112,10 +156,9 @@ import { useFetch } from "../hooks/useFetch";
               >
                 <TouchableWithoutFeedback onPress={() => ""}>
                   <View style={styles.modalView}>
-                   <View style = {styles.modalTextContainer}><Text style={styles.modalText}>
-                      Верно!
+                   <View style = {styles.modalTextContainer}><Text style={styles.modalText}>{inputValue === cards.message[numOfData].russian.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC') ? 'Верно!' : `Неверно, ${cards.message[numOfData].russian}`}
                     </Text></View>
-                    <Text style = {{width: '100%', fontFamily: 'Poppins-Regular', fontSize: 30, color: colors.white, marginBottom: 10, borderBottomWidth: 1, borderColor: 'white', textAlign: 'center'}}>00:15</Text>
+                    <Text style = {{width: '100%', fontFamily: 'Poppins-Regular', fontSize: 30, color: colors.white, marginBottom: 10, borderBottomWidth: 1, borderColor: 'white', textAlign: 'center'}}>{timer}</Text>
                     <View style={styles.modalButtonsContainer}>
                       <TouchableOpacity onPress={handleConfirmExit}>
                         <Text style={styles.modalButton}>Выйти</Text>

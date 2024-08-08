@@ -1,9 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { colors } from "../constants/colors";
 import { categories } from "../constants/categories";
 import Category from "../components/category";
 import { Props } from "../intarfases/screensInterface";
+import { useAppDispatch } from "../hooks/redux";
+import { getCards } from "../store/cardsSlice";
 
 
 
@@ -11,6 +13,7 @@ export default function CategoryScreen({ navigation }:Props) {
 
   const [selectedCategories , setSelectedCategories ] = useState<string[]>([]);
 
+  const dispatch = useAppDispatch()
 
   const onSelect = (level: string) => {
     if(selectedCategories.includes(level)){

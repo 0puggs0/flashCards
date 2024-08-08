@@ -4,7 +4,11 @@ import { useEffect } from 'react';
 import {useFonts} from 'expo-font'
 import InitialScreen from './src/screens/initialScreen';
 import { MyStack } from './src/navigation/mainStack';
+import { Provider } from 'react-redux';
+import { setupStore } from './src/store/store';
 
+
+const store = setupStore();
 export default function App() {
   const [fontsLoaded] = useFonts({
     'Poppins-Medium': require('./assets/fonts/Poppins-Medium.ttf'),
@@ -17,12 +21,13 @@ export default function App() {
     return undefined
   }
   return (
-    
+    <Provider store={store}>
     <View style={styles.container}>
       {/* <WordCard level={'A1 Level'} word={'mother'} transcription={'[`matsh]'} translatedWord={'мама'}></WordCard> */}
       {/* <InitialScreen></InitialScreen> */}
       <MyStack></MyStack>
     </View>
+    </Provider>
   
   );
 }
