@@ -41,6 +41,23 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
   );
 
 
+  const persentWord = () => {
+    let count = 0
+    for(let i = 0;inputValue.length > cards.message?.[numOfData].russian.length ? i<inputValue.length : i<cards.message?.[numOfData].russian.length; i++){
+        if(inputValue.charAt(i) === cards.message?.[numOfData].russian
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .normalize("NFC").charAt(i)){
+            count++
+        }
+    }
+    if((count/cards.message?.[numOfData].russian.length)*100 >= 50){
+        return `Верно!, ${cards.message?.[numOfData].russian}`
+    } else{
+        return `Неверно, ${cards.message?.[numOfData].russian}`
+    }
+    
+}
 
 
   useEffect(() => {
@@ -51,6 +68,14 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
     setShowModal(true);
     clearInterval(intervalId);
   };
+
+  const skipWord = async () => {
+    setShowModal(false);
+    reset()
+    await new Promise(res => setTimeout(() => { res(true) }, 400))
+    setNumOfData(randomIndex)
+    setInputValue("");
+  }
 
   const handleConfirmExit = async () => {
     setShowModal(false);
@@ -115,7 +140,7 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
             </View>
             <View>
               <View style={styles.buttonContainer}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={skipWord}>
                   <Text style={styles.button}>Пропустить</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleExit}>
@@ -148,13 +173,7 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
                 <View style={styles.modalView}>
                   <View style={styles.modalTextContainer}>
                     <Text style={styles.modalText}>
-                      {inputValue ===
-                      cards.message?.[numOfData].russian
-                        .normalize("NFD")
-                        .replace(/[\u0300-\u036f]/g, "")
-                        .normalize("NFC")
-                        ? "Верно!"
-                        : `Неверно, ${cards.message?.[numOfData].russian}`}
+                      {persentWord()}
                     </Text>
                   </View>
                   <Text
