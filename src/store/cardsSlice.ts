@@ -1,6 +1,12 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { apiInterface } from "../intarfases/apiInterface";
 
-const initialValue = {cards: [],cardsLoading: false};
+interface InitialValue{
+  cards: apiInterface,
+  cardsLoading: boolean
+}
+
+const initialValue: InitialValue = {cards: [],cardsLoading: false};
 export const cardsSlice = createSlice({
   
   name: "cardsSlice",
@@ -8,7 +14,7 @@ export const cardsSlice = createSlice({
   reducers: {
     setCards: (
         state,
-        action: PayloadAction<any>
+        action: PayloadAction<apiInterface>
       ) => {
         state.cards = action.payload;
       },
