@@ -6,7 +6,9 @@ interface InitialValue{
   cardsLoading: boolean
 }
 
-const initialValue: InitialValue = {cards: [],cardsLoading: false};
+export const url = 'https://api.rosggram.ru'
+
+const initialValue: InitialValue = {cards: {message: []},cardsLoading: false};
 export const cardsSlice = createSlice({
   
   name: "cardsSlice",
@@ -35,9 +37,9 @@ export const cardsSlice = createSlice({
 })
 export const {setCards} = cardsSlice.actions
 
-export const getCards = createAsyncThunk('Cards', async (_:undefined) => {
+export const getCards = createAsyncThunk('Cards', async () => {
     try {
-        const response = await fetch('https://api.rosggram.ru/get-cards/1')
+        const response = await fetch(url + '/get-cards/1')
         const data = response.json()
         return data
     }

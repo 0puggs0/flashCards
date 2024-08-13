@@ -19,6 +19,8 @@ import { SCREEN_HEIGTH, SCREEN_WIDTH } from "../constants/sizes";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { getCards } from "../store/cardsSlice";
 import { useTimer } from "../hooks/useTimer";
+import { speak } from "expo-speech";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ValueProps {
   level: string;
@@ -32,7 +34,7 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
   const [showModal, setShowModal] = useState(false);
 
   const { cards, cardsLoading } = useAppSelector((state) => state.cards);
-
+  const [correctWord, setCorrectWord] = useState('')
   const [inputValue, setInputValue] = useState("");
   const randomIndex = Math.floor(Math.random() * 100) + 1
   const {timer, intervalId, reset} = useTimer()
@@ -41,24 +43,6 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
   );
 
 
-  const persentWord = () => {
-    let count = 0
-    for(let i = 0;inputValue.length > cards.message?.[numOfData].russian.length ? i<inputValue.length : i<cards.message?.[numOfData].russian.length; i++){
-        if(inputValue.charAt(i) === cards.message?.[numOfData].russian
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .normalize("NFC").charAt(i)){
-            count++
-        }
-    }
-    if((count/cards.message?.[numOfData].russian.length)*100 >= 50){
-        return `Верно!, ${cards.message?.[numOfData].russian}`
-    } else{
-        return `Неверно, ${cards.message?.[numOfData].russian}`
-    }
-    
-}
-
 
   useEffect(() => {
     dispatch(getCards());
@@ -66,7 +50,34 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
 
   const handleExit = () => {
     setShowModal(true);
-    clearInterval(intervalId);
+    if(intervalId){
+      clearInterval(intervalId);
+    }
+    let count = 0
+    for(let i = 0;inputValue.length > word?.russian.length ? i<inputValue.length : i<word?.russian.length; i++){
+        if(inputValue.charAt(i).toLowerCase() === word?.russian.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .normalize("NFC").charAt(i)){
+            count++
+        }
+    }
+    if((count/word?.russian.length)*100 >= 50){
+        const category = AsyncStorage.getItem('A1').then(category => {
+          if(category != null){
+            const parsedCategory = JSON.parse(category)
+             AsyncStorage.setItem('A1', JSON.stringify([...parsedCategory, word?.english]))
+          } else {
+            AsyncStorage.setItem('A1', JSON.stringify([word?.english]))
+          }
+           
+        } )
+       
+        setCorrectWord(`Верно!, ${word?.russian}`)
+    } else{
+        setCorrectWord(`Неверно, ${word?.russian}`)
+    }
+    
   };
 
   const skipWord = async () => {
@@ -90,6 +101,8 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
     setNumOfData(randomIndex)
     setInputValue("");
   };
+
+  const word = cards?.message?.[numOfData]
 
   return (
     <KeyboardAvoidingView
@@ -123,14 +136,16 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
             <View style={styles.centerBlock}>
               <View style={styles.mainWordContainer}>
                 <Text style={styles.mainWord}>
-                  {cards?.message?.[numOfData].english}
+                  {word?.english}
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                  speak(word?.english)
+                }}>
                   <AntDesign name="sound" size={26} color={colors.white} />
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.sentence}>{cards?.message?.[numOfData].english_sentence}</Text>
+              <Text style={styles.sentence}>{word?.english_sentence}</Text>
               <TextInput
                 placeholder={"Введите слово"}
                 style={styles.textInput}
@@ -173,7 +188,7 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
                 <View style={styles.modalView}>
                   <View style={styles.modalTextContainer}>
                     <Text style={styles.modalText}>
-                      {persentWord()}
+                      {correctWord}
                     </Text>
                   </View>
                   <Text
