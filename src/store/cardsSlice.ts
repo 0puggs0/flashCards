@@ -37,9 +37,9 @@ export const cardsSlice = createSlice({
 })
 export const {setCards} = cardsSlice.actions
 
-export const getCards = createAsyncThunk('Cards', async () => {
+export const getCards = createAsyncThunk('Cards', async (complexity:number) => {
     try {
-        const response = await fetch(url + '/get-cards/1')
+        const response = await fetch(url + `/get-cards/${complexity}`)
         const data = response.json()
         return data
     }

@@ -4,7 +4,7 @@ export const useTimer = () => {
     const [seconds, setSeconds] = useState(0);
     const [minutes, setMinutes] = useState(0);
     const [timer, setTimer] = useState("00:00");
-    const [intervalId, setIntervalId] = useState(null);
+    const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
     const reset = () => {
         setSeconds(0)

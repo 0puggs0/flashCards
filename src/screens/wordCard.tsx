@@ -21,6 +21,7 @@ import { getCards } from "../store/cardsSlice";
 import { useTimer } from "../hooks/useTimer";
 import { speak } from "expo-speech";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { categories } from "../constants/categories";
 
 interface ValueProps {
   level: string;
@@ -29,7 +30,7 @@ interface ValueProps {
   translatedWord: string;
 }
 
-export const WordCard = ({ navigation }: Props, props: ValueProps) => {
+export const WordCard = ({ navigation, route }: Props, props: ValueProps) => {
   const dispatch = useAppDispatch();
   const [showModal, setShowModal] = useState(false);
 
@@ -45,7 +46,8 @@ export const WordCard = ({ navigation }: Props, props: ValueProps) => {
 
 
   useEffect(() => {
-    dispatch(getCards());
+    dispatch(getCards(categories.category.findIndex(item => item.level === route.params.selectedCategories[0]) + 1));
+    
   }, []);
 
   const handleExit = () => {

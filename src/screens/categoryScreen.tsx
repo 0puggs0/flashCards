@@ -14,10 +14,9 @@ export default function CategoryScreen({ navigation }: Props) {
   useEffect(() => {
     AsyncStorage.getItem("A1").then((data) => {
       const word = JSON.parse(data);
-      console.log(word)
       setCategoryPercent((word.length/1000)*100)
-    });
-  }, []);
+    })
+  }, [])
 
   const dispatch = useAppDispatch();
 
@@ -48,7 +47,7 @@ export default function CategoryScreen({ navigation }: Props) {
           {categories.category.map((item, index) => {
             return (
               <Category
-                key={index}
+                key={item.level}
                 level={item.level}
                 cost={item.cost}
                 percent={item.persent}
@@ -70,7 +69,7 @@ export default function CategoryScreen({ navigation }: Props) {
             ? styles.disabledContinueButton
             : styles.activeContinueButton
         }
-        onPress={() => navigation.navigate("WordCard")}
+        onPress={() => navigation.navigate("WordCard", {selectedCategories})}
       >
         <Text style={styles.continueButtonText}>Продолжить</Text>
       </TouchableOpacity>
