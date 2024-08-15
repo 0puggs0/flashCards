@@ -22,21 +22,27 @@ import { useTimer } from "../hooks/useTimer";
 import { speak } from "expo-speech";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { categories } from "../constants/categories";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { StackNavigationProp } from "@react-navigation/stack";
 
 interface ValueProps {
   level: string;
   word: string;
   transcription: string;
   translatedWord: string;
+  navigation: StackNavigationProp<any, any>;
 }
 
-export const WordCard = ({ navigation, route }: Props, props: ValueProps) => {
+export const WordCard = ({ navigation, route }: ValueProps) => {
   const dispatch = useAppDispatch();
   const [showModal, setShowModal] = useState(false);
 
   const { cards, cardsLoading } = useAppSelector((state) => state.cards);
   const [correctWord, setCorrectWord] = useState('')
   const [inputValue, setInputValue] = useState("");
+
+  const [ruSentence, setRuSentense] = useState(false)
+
   const randomIndex = Math.floor(Math.random() * 100) + 1
   const {timer, intervalId, reset} = useTimer()
   const [numOfData, setNumOfData] = useState(
@@ -88,6 +94,7 @@ export const WordCard = ({ navigation, route }: Props, props: ValueProps) => {
     await new Promise(res => setTimeout(() => { res(true) }, 400))
     setNumOfData(randomIndex)
     setInputValue("");
+    setRuSentense(false)
   }
 
   const handleConfirmExit = async () => {
@@ -132,7 +139,10 @@ export const WordCard = ({ navigation, route }: Props, props: ValueProps) => {
           </View>
           <View style={styles.container}>
             <View style={styles.topBlock}>
-              <Text style={styles.textLevel}>А1 уровень</Text>
+              <TouchableOpacity onPress={() => {ruSentence ? setRuSentense(false) : setRuSentense(true)}} style = {styles.lamp}>
+                <FontAwesome5 name="lightbulb" size={30} color={colors.white} />
+              </TouchableOpacity>
+              <Text style={styles.textLevel}>А{categories.category.findIndex(item => item.level === route.params.selectedCategories[0]) + 1} уровень</Text>
               <Text style={styles.textTime}>{timer}</Text>
             </View>
             <View style={styles.centerBlock}>
@@ -147,7 +157,7 @@ export const WordCard = ({ navigation, route }: Props, props: ValueProps) => {
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.sentence}>{word?.english_sentence}</Text>
+              <Text style={styles.sentence}>{ruSentence ? word?.russian_sentence : word?.english_sentence}</Text>
               <TextInput
                 placeholder={"Введите слово"}
                 style={styles.textInput}
@@ -172,9 +182,8 @@ export const WordCard = ({ navigation, route }: Props, props: ValueProps) => {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <TouchableWithoutFeedback
+          <View
             style={{ flex: 1, width: "100%" }}
-            onPress={handleCancelExit}
           >
             <View
               style={{
@@ -218,7 +227,7 @@ export const WordCard = ({ navigation, route }: Props, props: ValueProps) => {
                 </View>
               </TouchableWithoutFeedback>
             </View>
-          </TouchableWithoutFeedback>
+          </View>
         </View>
       </Modal>
     </KeyboardAvoidingView>
@@ -297,6 +306,10 @@ const styles = StyleSheet.create({
     gap: 50,
     alignItems: "center",
     justifyContent: "center",
+  },
+  lamp: {
+    position: "absolute",
+    left: 0,
   },
   textTime: {
     color: colors.white,
