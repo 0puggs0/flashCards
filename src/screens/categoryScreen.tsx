@@ -9,14 +9,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CategoryScreen({ navigation }: Props) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [categoryPercent, setCategoryPercent] = useState(0)
+  const [categoryPercent, setCategoryPercent] = useState(0);
 
   useEffect(() => {
     AsyncStorage.getItem("A1").then((data) => {
-      const word = JSON.parse(data);
-      setCategoryPercent((word.length/1000)*100)
-    })
-  }, [])
+      if (data !== null) {
+        const word = JSON.parse(data);
+        setCategoryPercent((word.length / 1000) * 100);
+      }
+    });
+  }, []);
 
   const dispatch = useAppDispatch();
 
@@ -69,7 +71,7 @@ export default function CategoryScreen({ navigation }: Props) {
             ? styles.disabledContinueButton
             : styles.activeContinueButton
         }
-        onPress={() => navigation.navigate("WordCard", {selectedCategories})}
+        onPress={() => navigation.navigate("WordCard", { selectedCategories })}
       >
         <Text style={styles.continueButtonText}>Продолжить</Text>
       </TouchableOpacity>

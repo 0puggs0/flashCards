@@ -22,8 +22,9 @@ import { useTimer } from "../hooks/useTimer";
 import { speak } from "expo-speech";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { categories } from "../constants/categories";
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp } from "@react-navigation/native";
 
 interface ValueProps {
   level: string;
@@ -31,6 +32,7 @@ interface ValueProps {
   transcription: string;
   translatedWord: string;
   navigation: StackNavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
 export const WordCard = ({ navigation, route }: ValueProps) => {
@@ -38,64 +40,81 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
   const [showModal, setShowModal] = useState(false);
 
   const { cards, cardsLoading } = useAppSelector((state) => state.cards);
-  const [correctWord, setCorrectWord] = useState('')
+  const [correctWord, setCorrectWord] = useState("");
   const [inputValue, setInputValue] = useState("");
 
-  const [ruSentence, setRuSentense] = useState(false)
+  const [ruSentence, setRuSentense] = useState(false);
 
-  const randomIndex = Math.floor(Math.random() * 100) + 1
-  const {timer, intervalId, reset} = useTimer()
-  const [numOfData, setNumOfData] = useState(
-    randomIndex
-  );
-
-
+  const randomIndex = Math.floor(Math.random() * 100) + 1;
+  const { timer, intervalId, reset } = useTimer();
+  const [numOfData, setNumOfData] = useState(randomIndex);
 
   useEffect(() => {
-    dispatch(getCards(categories.category.findIndex(item => item.level === route.params.selectedCategories[0]) + 1));
-    
+    dispatch(
+      getCards(
+        categories.category.findIndex(
+          (item) => item.level === route.params?.selectedCategories[0]
+        ) + 1
+      )
+    );
   }, []);
 
   const handleExit = () => {
     setShowModal(true);
-    if(intervalId){
+    if (intervalId) {
       clearInterval(intervalId);
     }
-    let count = 0
-    for(let i = 0;inputValue.length > word?.russian.length ? i<inputValue.length : i<word?.russian.length; i++){
-        if(inputValue.charAt(i).toLowerCase() === word?.russian.toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .normalize("NFC").charAt(i)){
-            count++
+    let count = 0;
+    for (
+      let i = 0;
+      inputValue.length > word?.russian.length
+        ? i < inputValue.length
+        : i < word?.russian.length;
+      i++
+    ) {
+      if (
+        inputValue.charAt(i).toLowerCase() ===
+        word?.russian
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .normalize("NFC")
+          .charAt(i)
+      ) {
+        count++;
+      }
+    }
+    if ((count / word?.russian.length) * 100 >= 50) {
+      const category = AsyncStorage.getItem("A1").then((category) => {
+        if (category != null) {
+          const parsedCategory = JSON.parse(category);
+          AsyncStorage.setItem(
+            "A1",
+            JSON.stringify([...parsedCategory, word?.english])
+          );
+        } else {
+          AsyncStorage.setItem("A1", JSON.stringify([word?.english]));
         }
+      });
+
+      setCorrectWord(`Верно!, ${word?.russian}`);
+    } else {
+      setCorrectWord(`Неверно, ${word?.russian}`);
     }
-    if((count/word?.russian.length)*100 >= 50){
-        const category = AsyncStorage.getItem('A1').then(category => {
-          if(category != null){
-            const parsedCategory = JSON.parse(category)
-             AsyncStorage.setItem('A1', JSON.stringify([...parsedCategory, word?.english]))
-          } else {
-            AsyncStorage.setItem('A1', JSON.stringify([word?.english]))
-          }
-           
-        } )
-       
-        setCorrectWord(`Верно!, ${word?.russian}`)
-    } else{
-        setCorrectWord(`Неверно, ${word?.russian}`)
-    }
-    
   };
 
   const skipWord = async () => {
     setShowModal(false);
-    reset()
-    await new Promise(res => setTimeout(() => { res(true) }, 400))
-    setNumOfData(randomIndex)
+    reset();
+    await new Promise((res) =>
+      setTimeout(() => {
+        res(true);
+      }, 400)
+    );
+    setNumOfData(randomIndex);
     setInputValue("");
-    setRuSentense(false)
-  }
+    setRuSentense(false);
+  };
 
   const handleConfirmExit = async () => {
     setShowModal(false);
@@ -105,13 +124,17 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
 
   const handleCancelExit = async () => {
     setShowModal(false);
-    reset()
-    await new Promise(res => setTimeout(() => { res(true) }, 400))
-    setNumOfData(randomIndex)
+    reset();
+    await new Promise((res) =>
+      setTimeout(() => {
+        res(true);
+      }, 400)
+    );
+    setNumOfData(randomIndex);
     setInputValue("");
   };
 
-  const word = cards?.message?.[numOfData]
+  const word = cards?.message?.[numOfData];
 
   return (
     <KeyboardAvoidingView
@@ -139,25 +162,40 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
           </View>
           <View style={styles.container}>
             <View style={styles.topBlock}>
-              <TouchableOpacity onPress={() => {ruSentence ? setRuSentense(false) : setRuSentense(true)}} style = {styles.lamp}>
+              <TouchableOpacity
+                onPress={() => {
+                  ruSentence ? setRuSentense(false) : setRuSentense(true);
+                }}
+                style={styles.lamp}
+              >
                 <FontAwesome5 name="lightbulb" size={30} color={colors.white} />
               </TouchableOpacity>
-              <Text style={styles.textLevel}>А{categories.category.findIndex(item => item.level === route.params.selectedCategories[0]) + 1} уровень</Text>
+              <Text style={styles.textLevel}>
+                А
+                {categories.category.findIndex(
+                  (item) => item.level === route.params?.selectedCategories[0]
+                ) + 1}{" "}
+                уровень
+              </Text>
               <Text style={styles.textTime}>{timer}</Text>
             </View>
             <View style={styles.centerBlock}>
               <View style={styles.mainWordContainer}>
-                <Text style={styles.mainWord}>
-                  {word?.english}
-                </Text>
-                <TouchableOpacity onPress={() => {
-                  speak(word?.english)
-                }}>
+                <Text style={styles.mainWord}>{word?.english}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    speak(word?.english, {
+                      pitch: -7,
+                    });
+                  }}
+                >
                   <AntDesign name="sound" size={26} color={colors.white} />
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.sentence}>{ruSentence ? word?.russian_sentence : word?.english_sentence}</Text>
+              <Text style={styles.sentence}>
+                {ruSentence ? word?.russian_sentence : word?.english_sentence}
+              </Text>
               <TextInput
                 placeholder={"Введите слово"}
                 style={styles.textInput}
@@ -182,9 +220,7 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <View
-            style={{ flex: 1, width: "100%" }}
-          >
+          <View style={{ flex: 1, width: "100%" }}>
             <View
               style={{
                 width: "100%",
@@ -198,9 +234,7 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
               <TouchableWithoutFeedback onPress={() => ""}>
                 <View style={styles.modalView}>
                   <View style={styles.modalTextContainer}>
-                    <Text style={styles.modalText}>
-                      {correctWord}
-                    </Text>
+                    <Text style={styles.modalText}>{correctWord}</Text>
                   </View>
                   <Text
                     style={{
