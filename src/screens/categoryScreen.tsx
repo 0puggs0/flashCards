@@ -1,28 +1,26 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { colors } from "../constants/colors";
 import { categories } from "../constants/categories";
 import Category from "../components/category";
 import { Props } from "../intarfases/screensInterface";
-import { useAppDispatch } from "../hooks/redux";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SCREEN_WIDTH } from "../constants/sizes";
+import { Keys } from "../utils/storage";
 
 export default function CategoryScreen({ navigation }: Props) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [categoryPercent, setCategoryPercent] = useState(0);
+  // const [categoryPercent, setCategoryPercent] = useState(0);
 
-  useEffect(() => {
-    AsyncStorage.getItem("A1").then((data) => {
-      if (data !== null) {
-        const word = JSON.parse(data);
-        setCategoryPercent((word.length / 1000) * 100);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   AsyncStorage.getItem("A1").then((data) => {
+  //     if (data !== null) {
+  //       const word = JSON.parse(data);
+  //       setCategoryPercent((word.length / 1000) * 100);
+  //     }
+  //   });
+  // }, []);
 
-  const dispatch = useAppDispatch();
-
-  const onSelect = (level: string) => {
+  const onSelect = (level: Keys) => {
     if (selectedCategories.includes(level)) {
       setSelectedCategories((prev) => prev.filter((item) => item !== level));
     } else {
@@ -39,14 +37,14 @@ export default function CategoryScreen({ navigation }: Props) {
             fontFamily: "Poppins-SemiBold",
             color: colors.white,
             fontSize: 24,
-            width: 326,
+            width: SCREEN_WIDTH - 32,
             marginBottom: 24,
           }}
         >
           Выберите категорию сложности
         </Text>
         <View>
-          {categories.category.map((item, index) => {
+          {categories.category.map((item) => {
             return (
               <Category
                 key={item.level}
@@ -71,7 +69,9 @@ export default function CategoryScreen({ navigation }: Props) {
             ? styles.disabledContinueButton
             : styles.activeContinueButton
         }
-        onPress={() => navigation.navigate("WordCard", { selectedCategories })}
+        onPress={() => {
+          navigation.navigate("WordCard", { selectedCategories });
+        }}
       >
         <Text style={styles.continueButtonText}>Продолжить</Text>
       </TouchableOpacity>

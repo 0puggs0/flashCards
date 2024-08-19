@@ -15,7 +15,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { colors } from "../constants/colors";
 import { Props } from "../intarfases/screensInterface";
-import { SCREEN_HEIGTH, SCREEN_WIDTH } from "../constants/sizes";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/sizes";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { getCards } from "../store/cardsSlice";
 import { useTimer } from "../hooks/useTimer";
@@ -25,6 +25,7 @@ import { categories } from "../constants/categories";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
+import { Keys } from "../utils/storage";
 
 interface ValueProps {
   level: string;
@@ -48,6 +49,15 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
   const randomIndex = Math.floor(Math.random() * 100) + 1;
   const { timer, intervalId, reset } = useTimer();
   const [numOfData, setNumOfData] = useState(randomIndex);
+
+  const complexityMap: Record<number | string, Keys> = {
+    1: "A1",
+    2: "A2",
+    3: "B1",
+    4: "B2",
+    5: "C1",
+    6: "C2",
+  };
 
   useEffect(() => {
     dispatch(
@@ -85,18 +95,22 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
       }
     }
     if ((count / word?.russian.length) * 100 >= 50) {
-      const category = AsyncStorage.getItem("A1").then((category) => {
+      const category = AsyncStorage.getItem(
+        complexityMap[word?.complexity]
+      ).then((category) => {
         if (category != null) {
           const parsedCategory = JSON.parse(category);
           AsyncStorage.setItem(
-            "A1",
+            complexityMap[word?.complexity],
             JSON.stringify([...parsedCategory, word?.english])
           );
         } else {
-          AsyncStorage.setItem("A1", JSON.stringify([word?.english]));
+          AsyncStorage.setItem(
+            complexityMap[word?.complexity],
+            JSON.stringify([word?.english])
+          );
         }
       });
-
       setCorrectWord(`Верно, ${word?.russian}`);
     } else {
       setCorrectWord(`Неверно, ${word?.russian}`);
@@ -188,7 +202,7 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
                 <Text style={styles.mainWord}>{word?.english}</Text>
                 <TouchableOpacity
                   onPress={() => {
-                    speak(word?.english);
+                    speak(word?.english, {});
                   }}
                 >
                   <AntDesign name="sound" size={26} color={colors.white} />
@@ -273,7 +287,7 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
 const styles = StyleSheet.create({
   container: {
     width: SCREEN_WIDTH - 40,
-    height: SCREEN_HEIGTH - 200,
+    height: SCREEN_HEIGHT - 200,
     backgroundColor: "rgba(27, 29, 37, 1)",
     borderRadius: 20,
     paddingHorizontal: 20,

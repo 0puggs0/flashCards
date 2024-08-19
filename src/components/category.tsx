@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Checkbox from "expo-checkbox";
 import { colors } from "../constants/colors";
+import { Keys, Storage } from "../utils/storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface Props {
-  level: string;
+  level: Keys;
   cost: string;
   percent: string;
   color: string;
@@ -12,6 +14,14 @@ interface Props {
   onSelect: () => void;
 }
 export default function Category(props: Props) {
+  const [percent, setPercent] = useState("");
+
+  useFocusEffect(() => {
+    (async () => {
+      const progress = await Storage.get(props.level);
+      setPercent(progress || "0");
+    })();
+  });
   const styles = createStyles(props);
   return (
     <View style={styles.container}>
@@ -22,7 +32,9 @@ export default function Category(props: Props) {
             <Text style={styles.costText}>{props.cost}</Text>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <Text style={styles.percent}>{props.percent}</Text>
+            <Text style={styles.percent}>
+              {Math.floor((percent.length / 1000) * 100) + "%"}
+            </Text>
             <Checkbox
               color={colors.borderColor}
               value={props.isSelected}
