@@ -43,7 +43,7 @@ export default function CategoryScreen({ navigation }: Props) {
             marginBottom: 24,
           }}
         >
-          Выберите категорию сложности {categoryPercent}
+          Выберите категорию сложности
         </Text>
         <View>
           {categories.category.map((item, index) => {

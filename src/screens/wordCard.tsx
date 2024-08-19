@@ -97,7 +97,7 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
         }
       });
 
-      setCorrectWord(`Верно!, ${word?.russian}`);
+      setCorrectWord(`Верно, ${word?.russian}`);
     } else {
       setCorrectWord(`Неверно, ${word?.russian}`);
     }
@@ -171,11 +171,15 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
                 <FontAwesome5 name="lightbulb" size={30} color={colors.white} />
               </TouchableOpacity>
               <Text style={styles.textLevel}>
-                А
-                {categories.category.findIndex(
-                  (item) => item.level === route.params?.selectedCategories[0]
-                ) + 1}{" "}
-                уровень
+                {route.params?.selectedCategories.length > 1
+                  ? route.params?.selectedCategories.map(
+                      (item: string, index: number, arr: []) =>
+                        index !== arr.length - 1 ? item + ", " : item
+                    )
+                  : route.params?.selectedCategories}{" "}
+                {route.params?.selectedCategories.length > 1
+                  ? "уровни"
+                  : "уровень"}
               </Text>
               <Text style={styles.textTime}>{timer}</Text>
             </View>
@@ -184,9 +188,7 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
                 <Text style={styles.mainWord}>{word?.english}</Text>
                 <TouchableOpacity
                   onPress={() => {
-                    speak(word?.english, {
-                      pitch: -7,
-                    });
+                    speak(word?.english);
                   }}
                 >
                   <AntDesign name="sound" size={26} color={colors.white} />
