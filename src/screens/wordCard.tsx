@@ -14,7 +14,6 @@ import React, { useEffect, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { colors } from "../constants/colors";
-import { Props } from "../intarfases/screensInterface";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/sizes";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { getCards } from "../store/cardsSlice";
@@ -199,7 +198,9 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
             </View>
             <View style={styles.centerBlock}>
               <View style={styles.mainWordContainer}>
-                <Text style={styles.mainWord}>{word?.english}</Text>
+                <Text style={styles.mainWord}>
+                  {word?.english.split(",")[0]}
+                </Text>
                 <TouchableOpacity
                   onPress={() => {
                     speak(word?.english, {});
