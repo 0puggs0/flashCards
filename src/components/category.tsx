@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Checkbox from "expo-checkbox";
 import { colors } from "../constants/colors";
@@ -13,13 +13,35 @@ interface Props {
   isSelected: boolean;
   onSelect: () => void;
 }
+
+const complexityObj = {
+  A1: 0,
+  A2: 1,
+  B1: 2,
+  B2: 3,
+  C1: 4,
+  C2: 5,
+};
+
+interface ComplexityItem {
+  complexity: number;
+  count: number;
+}
 export default function Category(props: Props) {
   const [percent, setPercent] = useState("");
-
+  const [complexityTotal, setComplexityTotal] = useState<Array<ComplexityItem>>(
+    []
+  );
+  const level = props.level;
   useFocusEffect(() => {
     (async () => {
       const progress = await Storage.get(props.level);
+      const response = await fetch(
+        "https://api.rosggram.ru/complexityTotal"
+      ).then((data) => data.json());
+
       setPercent(progress || "0");
+      setComplexityTotal(response.message);
     })();
   });
   const styles = createStyles(props);
@@ -33,7 +55,13 @@ export default function Category(props: Props) {
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
             <Text style={styles.percent}>
-              {Math.floor((percent.length / 1000) * 100) + "%"}
+              {complexityTotal?.[complexityObj[level]]?.count !== undefined
+                ? Math.floor(
+                    (percent.length /
+                      complexityTotal?.[complexityObj[level]]?.count) *
+                      100
+                  ) + "%"
+                : "нет слов"}
             </Text>
             <Checkbox
               color={colors.borderColor}

@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Modal,
@@ -198,9 +199,13 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
             </View>
             <View style={styles.centerBlock}>
               <View style={styles.mainWordContainer}>
-                <Text style={styles.mainWord}>
-                  {word?.english.split(",")[0]}
-                </Text>
+                {cardsLoading ? (
+                  <ActivityIndicator color={colors.gray} />
+                ) : (
+                  <Text style={styles.mainWord}>
+                    {word?.english.split(",")[0]}
+                  </Text>
+                )}
                 <TouchableOpacity
                   onPress={() => {
                     speak(word?.english, {});
@@ -209,10 +214,14 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
                   <AntDesign name="sound" size={26} color={colors.white} />
                 </TouchableOpacity>
               </View>
+              {cardsLoading ? (
+                <ActivityIndicator color={colors.gray} />
+              ) : (
+                <Text style={styles.sentence}>
+                  {ruSentence ? word?.russian_sentence : word?.english_sentence}
+                </Text>
+              )}
 
-              <Text style={styles.sentence}>
-                {ruSentence ? word?.russian_sentence : word?.english_sentence}
-              </Text>
               <TextInput
                 placeholder={"Введите слово"}
                 style={styles.textInput}
