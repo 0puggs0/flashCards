@@ -9,16 +9,6 @@ import { Keys } from "../utils/storage";
 
 export default function CategoryScreen({ navigation }: Props) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  // const [categoryPercent, setCategoryPercent] = useState(0);
-
-  // useEffect(() => {
-  //   AsyncStorage.getItem("A1").then((data) => {
-  //     if (data !== null) {
-  //       const word = JSON.parse(data);
-  //       setCategoryPercent((word.length / 1000) * 100);
-  //     }
-  //   });
-  // }, []);
 
   const onSelect = (level: Keys) => {
     if (selectedCategories.includes(level)) {

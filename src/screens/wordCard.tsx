@@ -100,10 +100,12 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
       ).then((category) => {
         if (category != null) {
           const parsedCategory = JSON.parse(category);
-          AsyncStorage.setItem(
-            complexityMap[word?.complexity],
-            JSON.stringify([...parsedCategory, word?.english])
-          );
+          if (!parsedCategory.includes(word?.english)) {
+            AsyncStorage.setItem(
+              complexityMap[word?.complexity],
+              JSON.stringify([...parsedCategory, word?.english])
+            );
+          }
         } else {
           AsyncStorage.setItem(
             complexityMap[word?.complexity],

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Checkbox from "expo-checkbox";
 import { colors } from "../constants/colors";
@@ -28,7 +28,7 @@ interface ComplexityItem {
   count: number;
 }
 export default function Category(props: Props) {
-  const [percent, setPercent] = useState("");
+  const [percent, setPercent] = useState(0);
   const [complexityTotal, setComplexityTotal] = useState<Array<ComplexityItem>>(
     []
   );
@@ -36,18 +36,24 @@ export default function Category(props: Props) {
   useFocusEffect(() => {
     (async () => {
       const progress = await Storage.get(props.level);
+      if (progress) {
+        const jsonProgress = JSON.parse(progress);
+        setPercent(jsonProgress?.length || "0");
+      }
       const response = await fetch(
         "https://api.rosggram.ru/complexityTotal"
       ).then((data) => data.json());
 
-      setPercent(progress || "0");
       setComplexityTotal(response.message);
     })();
   });
   const styles = createStyles(props);
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => props.onSelect()}>
+      <TouchableOpacity
+        onPress={() => props.onSelect()}
+        disabled={complexityTotal?.[complexityObj[level]]?.count == undefined}
+      >
         <View style={styles.card}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
             <Text style={styles.levelText}>{props.level}</Text>
@@ -57,8 +63,7 @@ export default function Category(props: Props) {
             <Text style={styles.percent}>
               {complexityTotal?.[complexityObj[level]]?.count !== undefined
                 ? Math.floor(
-                    (percent.length /
-                      complexityTotal?.[complexityObj[level]]?.count) *
+                    (percent / complexityTotal?.[complexityObj[level]]?.count) *
                       100
                   ) + "%"
                 : "нет слов"}
@@ -67,6 +72,9 @@ export default function Category(props: Props) {
               color={colors.borderColor}
               value={props.isSelected}
               onValueChange={props.onSelect}
+              disabled={
+                complexityTotal?.[complexityObj[level]]?.count == undefined
+              }
             />
           </View>
         </View>
