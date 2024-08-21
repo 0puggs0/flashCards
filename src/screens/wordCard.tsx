@@ -152,6 +152,7 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
       }, 400)
     );
     setNumOfData(randomIndex);
+    setRuSentense(false);
     setInputValue("");
   };
 
@@ -224,7 +225,7 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
               {cardsLoading ? (
                 <ActivityIndicator color={colors.gray} />
               ) : (
-                <Text style={styles.sentence}>
+                <Text numberOfLines={4} style={styles.sentence}>
                   {ruSentence ? word?.russian_sentence : word?.english_sentence}
                 </Text>
               )}
@@ -349,7 +350,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     overflow: "hidden",
     fontSize: 23,
-    paddingVertical: 56,
+    paddingVertical: 30,
     paddingHorizontal: 25,
     textAlign: "center",
     borderRadius: 20,
