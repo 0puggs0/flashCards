@@ -69,7 +69,7 @@ export default function Category(props: Props) {
                 : "нет слов"}
             </Text>
             <Checkbox
-              color={colors.borderColor}
+              color={props.isSelected ? colors.borderColor : colors.borderColor}
               value={props.isSelected}
               onValueChange={props.onSelect}
               disabled={

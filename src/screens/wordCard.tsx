@@ -21,7 +21,6 @@ import { getCards } from "../store/cardsSlice";
 import { useTimer } from "../hooks/useTimer";
 import { speak } from "expo-speech";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { categories } from "../constants/categories";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
@@ -59,13 +58,19 @@ export const WordCard = ({ navigation, route }: ValueProps) => {
     6: "C2",
   };
 
+  const complexityObj = {
+    A1: 1,
+    A2: 2,
+    B1: 3,
+    B2: 4,
+    C1: 5,
+    C2: 6,
+  };
+
+  const categories = route.params?.selectedCategories;
   useEffect(() => {
     dispatch(
-      getCards(
-        categories.category.findIndex(
-          (item) => item.level === route.params?.selectedCategories[0]
-        ) + 1
-      )
+      getCards(categories.map((item: Keys) => complexityObj[item]).join("-"))
     );
   }, []);
 
